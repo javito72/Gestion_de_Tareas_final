@@ -8,6 +8,8 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const { ensureAuthenticated } = require('./middleware/auth');
 require('./database/seed.js');
+require('dotenv').config();
+
 
 const app = express();
 
