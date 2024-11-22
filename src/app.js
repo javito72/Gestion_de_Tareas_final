@@ -1,16 +1,18 @@
 // src/app.js
+
+// Cargar módulos
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const connectDB = require('./database/connect');
 const session = require('express-session');
 const flash = require('connect-flash');
 const { ensureAuthenticated } = require('./middleware/auth');
+const connectDB = require('./database/connect');
 require('./database/seed.js');
-require('dotenv').config();
 
-
+// Inicializar app
 const app = express();
 
 // Conectar a la base de datos
@@ -29,11 +31,13 @@ app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configurar sesiones
-app.use(session({
-  secret: 'tu_secreto_de_sesion', // Cambia esto por un secreto seguro
-  resave: false,
-  saveUninitialized: false,
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'clave_por_defecto',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // Configurar flash
 app.use(flash());
@@ -66,9 +70,9 @@ app.get('/dashboard', ensureAuthenticated, (req, res) => {
 });
 
 // Manejo de errores 404
-// app.use((req, res, next) => {
-//   res.status(404).send('Página no encontrada');
-// });
+app.use((req, res, next) => {
+  res.status(404).render('404', { titulo: 'Página no encontrada' });
+});
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
